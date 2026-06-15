@@ -14,16 +14,23 @@ terraform/
 │   ├── dev/              # Development environment
 │   │   ├── backend.tf
 │   │   ├── main.tf
+│   │   ├── outputs.tf
 │   │   └── version.tf
 │   └── prod/             # Production environment
 │       ├── backend.tf
 │       ├── main.tf
+│       ├── outputs.tf
 │       └── version.tf
 └── modules/
+    ├── eks/              # EKS cluster module
+    │   ├── iam.tf
+    │   ├── main.tf
+    │   ├── outputs.tf
+    │   └── variables.tf
     └── vpc/              # VPC module
         ├── main.tf
-        ├── variables.tf
-        └── outputs.tf
+        ├── outputs.tf
+        └── variables.tf
 ```
 
 ## Prerequisites
@@ -34,54 +41,26 @@ terraform/
 
 ## Environments
 
-| Environment | State Key                    | Region       | NAT Gateways       |
-| ----------- | ---------------------------- | ------------ | ------------------ |
-| `dev`       | `env/dev/terraform.tfstate`  | ca-central-1 | 1 (cost saving)    |
-| `prod`      | `env/prod/terraform.tfstate` | ca-central-1 | 1 per AZ (HA)      |
+| Environment | State Key                    | Region       | NAT Gateways    |
+| ----------- | ---------------------------- | ------------ | --------------- |
+| `dev`       | `env/dev/terraform.tfstate`  | ca-central-1 | 1 (cost saving) |
+| `prod`      | `env/prod/terraform.tfstate` | ca-central-1 | 1 per AZ (HA)   |
 
 ## Remote State
 
 State is stored in S3 with encryption and native S3 locking enabled (`use_lockfile = true`). No DynamoDB table is required.
 
-**S3 Bucket:** `linkr-tf-state-064160141787`  
+**S3 Bucket:** `linkr-tf-state-064160141787`
 **Region:** `ca-central-1`
 
 ## Modules
 
-### `vpc`
+See [terraform/modules/README.md](terraform/modules/MODULES.md) for full documentation on each module.
 
-Provisions a production-grade VPC with public and private subnets across all Availability Zones. Subnets are tagged for EKS discovery so the AWS Load Balancer Controller can find them automatically.
-
-**Resources created:**
-- VPC
-- Internet Gateway
-- Public subnets (one per AZ) — tagged `kubernetes.io/role/elb` for internet-facing load balancers
-- Private subnets (one per AZ) — tagged `kubernetes.io/role/internal-elb` for internal load balancers
-- Elastic IPs + NAT Gateways (count controlled by `single_nat_gateway`)
-- Route tables and associations (one public RT shared, one private RT per NAT GW)
-
-**Variables:**
-
-| Name                  | Type           | Default                                                    | Description                              |
-| --------------------- | -------------- | ---------------------------------------------------------- | ---------------------------------------- |
-| `name`                | `string`       | —                                                          | Name prefix for all resources            |
-| `cidr`                | `string`       | `"10.0.0.0/16"`                                           | VPC CIDR block                           |
-| `azs`                 | `list(string)` | `["ca-central-1a", "ca-central-1b", "ca-central-1d"]`    | Availability Zones                       |
-| `public_subnets_cidr` | `list(string)` | `["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]`         | CIDR blocks for public subnets           |
-| `private_subnets_cidr`| `list(string)` | `["10.0.11.0/24", "10.0.12.0/24", "10.0.13.0/24"]`      | CIDR blocks for private subnets          |
-| `eks_cluster_name`    | `string`       | `""`                                                       | EKS cluster name for subnet tagging      |
-| `single_nat_gateway`  | `bool`         | `false`                                                    | Use one shared NAT GW instead of one per AZ |
-| `tags`                | `map(string)`  | `{}`                                                       | Additional tags applied to all resources |
-
-**Outputs:**
-
-| Name               | Description                  |
-| ------------------ | ---------------------------- |
-| `vpc_id`           | ID of the VPC                |
-| `vpc_cidr`         | CIDR block of the VPC        |
-| `public_subnet_id` | List of public subnet IDs    |
-| `private_subnet_id`| List of private subnet IDs   |
-| `nat_gateways_id`  | List of NAT Gateway IDs      |
+| Module                          | Description                                                                                 |
+| ------------------------------- | ------------------------------------------------------------------------------------------- |
+| [`vpc`](terraform/modules/vpc/) | Production-grade VPC with public/private subnets and NAT Gateways, tagged for EKS discovery |
+| [`eks`](terraform/modules/eks/) | EKS cluster with managed node group, standard add-ons, and OIDC provider for IRSA           |
 
 ## Usage
 
