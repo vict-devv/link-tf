@@ -41,6 +41,72 @@ Provisions a production-grade VPC with public and private subnets across all Ava
 
 ---
 
+## `rds`
+
+Provisions a PostgreSQL 16 RDS instance in private subnets, accessible only from EKS nodes. Credentials are generated randomly and stored in AWS Secrets Manager.
+
+**Resources created:**
+- Security group (port 5432 ingress from EKS node SG only)
+- DB parameter group (`postgres16` family, connection logging enabled)
+- DB subnet group (private subnets)
+- RDS instance (`postgres` engine, gp3, encrypted at rest)
+- Secrets Manager secret (`linkr/<env>/postgres/credentials`) with host, port, username, password, and dbname
+
+**Variables:**
+
+| Name                 | Type           | Default   | Description                               |
+| -------------------- | -------------- | --------- | ----------------------------------------- |
+| `env`                | `string`       | —         | Environment name (`dev`, `prod`)          |
+| `vpc_id`             | `string`       | —         | VPC ID                                    |
+| `private_subnet_ids` | `list(string)` | —         | Private subnet IDs for the DB subnet group|
+| `eks_node_sg_id`     | `string`       | —         | EKS node security group ID                |
+| `instance_class`     | `string`       | —         | RDS instance class (e.g. `db.t3.micro`)   |
+| `multi_az`           | `bool`         | `false`   | Enable Multi-AZ standby                   |
+| `db_name`            | `string`       | `"linkr"` | Initial database name                     |
+| `tags`               | `map(string)`  | `{}`      | Tags applied to all resources             |
+
+**Outputs:**
+
+| Name                | Description                                       |
+| ------------------- | ------------------------------------------------- |
+| `security_group_id` | RDS security group ID                             |
+| `secret_arn`        | Secrets Manager ARN for DB credentials            |
+| `endpoint`          | RDS endpoint `host:port` (sensitive)              |
+
+---
+
+## `elasticache`
+
+Provisions a Redis 7.1 ElastiCache cluster in private subnets, accessible only from EKS nodes. Connection details are stored in AWS Secrets Manager.
+
+**Resources created:**
+- Security group (port 6379 ingress from EKS node SG only)
+- ElastiCache subnet group (private subnets)
+- ElastiCache cluster (`redis` engine, 7.1)
+- Secrets Manager secret (`linkr/<env>/redis/url`) with host and port
+
+**Variables:**
+
+| Name                 | Type           | Default            | Description                                    |
+| -------------------- | -------------- | ------------------ | ---------------------------------------------- |
+| `env`                | `string`       | —                  | Environment name (`dev`, `prod`)               |
+| `vpc_id`             | `string`       | —                  | VPC ID                                         |
+| `private_subnet_ids` | `list(string)` | —                  | Private subnet IDs for the subnet group        |
+| `eks_node_sg_id`     | `string`       | —                  | EKS node security group ID                     |
+| `node_type`          | `string`       | `"cache.t3.micro"` | ElastiCache node type                          |
+| `num_cache_nodes`    | `number`       | `1`                | Number of cache nodes                          |
+| `tags`               | `map(string)`  | `{}`               | Tags applied to all resources                  |
+
+**Outputs:**
+
+| Name                | Description                                    |
+| ------------------- | ---------------------------------------------- |
+| `security_group_id` | ElastiCache security group ID                  |
+| `secret_arn`        | Secrets Manager ARN for Redis connection       |
+| `endpoint`          | Redis endpoint `host:port`                     |
+
+---
+
 ## `eks`
 
 Provisions an EKS cluster with a managed node group, standard add-ons, and an OIDC provider for IAM Roles for Service Accounts (IRSA).

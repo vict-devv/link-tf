@@ -1,5 +1,6 @@
 locals {
-  prod-name = "linkr-prod"
+  environment = "prod"
+  prod-name   = "linkr-prod"
 
   prod-tags = {
     Environment = "prod"
@@ -29,6 +30,32 @@ module "eks" {
   node_min_size      = 1
   node_max_size      = 3
   node_desired_size  = 2
+
+  tags = local.prod-tags
+}
+
+module "rds" {
+  source = "../../modules/rds"
+
+  env                = local.environment
+  vpc_id             = module.vpc.vpc_id
+  private_subnet_ids = module.vpc.private_subnet_id
+  eks_node_sg_id     = module.eks.node_security_group_id
+  instance_class     = "db.t3.small"
+  multi_az           = true
+
+  tags = local.prod-tags
+}
+
+module "elasticache" {
+  source = "../../modules/elasticache"
+
+  env                = local.environment
+  vpc_id             = module.vpc.vpc_id
+  private_subnet_ids = module.vpc.private_subnet_id
+  eks_node_sg_id     = module.eks.node_security_group_id
+  node_type          = "cache.t3.micro"
+  num_cache_nodes    = 1
 
   tags = local.prod-tags
 }

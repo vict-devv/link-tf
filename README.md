@@ -27,6 +27,14 @@ terraform/
     │   ├── main.tf
     │   ├── outputs.tf
     │   └── variables.tf
+    ├── elasticache/      # ElastiCache (Redis) module
+    │   ├── main.tf
+    │   ├── outputs.tf
+    │   └── variables.tf
+    ├── rds/              # RDS (PostgreSQL) module
+    │   ├── main.tf
+    │   ├── outputs.tf
+    │   └── variables.tf
     └── vpc/              # VPC module
         ├── main.tf
         ├── outputs.tf
@@ -57,10 +65,12 @@ State is stored in S3 with encryption and native S3 locking enabled (`use_lockfi
 
 See [terraform/modules/README.md](terraform/modules/MODULES.md) for full documentation on each module.
 
-| Module                          | Description                                                                                 |
-| ------------------------------- | ------------------------------------------------------------------------------------------- |
-| [`vpc`](terraform/modules/vpc/) | Production-grade VPC with public/private subnets and NAT Gateways, tagged for EKS discovery |
-| [`eks`](terraform/modules/eks/) | EKS cluster with managed node group, standard add-ons, and OIDC provider for IRSA           |
+| Module                                          | Description                                                                                  |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [`vpc`](terraform/modules/vpc/)                 | Production-grade VPC with public/private subnets and NAT Gateways, tagged for EKS discovery  |
+| [`eks`](terraform/modules/eks/)                 | EKS cluster with managed node group, standard add-ons, and OIDC provider for IRSA            |
+| [`rds`](terraform/modules/rds/)                 | PostgreSQL 16 RDS instance with encrypted storage and credentials stored in Secrets Manager   |
+| [`elasticache`](terraform/modules/elasticache/) | Redis 7.1 ElastiCache cluster with connection details stored in Secrets Manager               |
 
 ## Usage
 
