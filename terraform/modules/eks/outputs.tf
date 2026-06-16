@@ -23,3 +23,8 @@ output "oidc_issuer_arn" {
   description = "ARN of the OIDC provider"
   value       = aws_iam_openid_connect_provider.this.arn
 }
+
+output "node_security_group_id" {
+  description = "Security group ID attached to EKS nodes"
+  value       = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
+}
