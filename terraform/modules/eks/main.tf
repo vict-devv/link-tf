@@ -45,10 +45,12 @@ resource "aws_eks_node_group" "main" {
 # Cluster Add-ons ----------------------------------------------------
 locals {
   addons = {
-    coredns            = {}
-    kube-proxy         = {}
-    vpc-cni            = {}
-    aws-ebs-csi-driver = {}
+    coredns    = {}
+    kube-proxy = {}
+    vpc-cni    = {}
+    aws-ebs-csi-driver = {
+      service_account_role_arn = aws_iam_role.ebs_csi.arn
+    }
   }
 }
 
@@ -58,6 +60,7 @@ resource "aws_eks_addon" "this" {
   cluster_name                = aws_eks_cluster.this.name
   addon_name                  = each.key
   resolve_conflicts_on_update = "OVERWRITE"
+  service_account_role_arn    = lookup(each.value, "service_account_role_arn", null)
 
   depends_on = [aws_eks_node_group.main]
 
