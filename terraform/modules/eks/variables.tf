@@ -43,6 +43,12 @@ variable "node_desired_size" {
   default     = 2
 }
 
+variable "environment" {
+  description = "The deployment environment (dev|prod)"
+  type        = string
+  default     = "prod"
+}
+
 variable "tags" {
   description = "Tags applied to all resources"
   type        = map(string)

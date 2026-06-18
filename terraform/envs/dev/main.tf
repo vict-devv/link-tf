@@ -31,6 +31,8 @@ module "eks" {
   node_max_size      = 3
   node_desired_size  = 2
 
+  environment = local.environment
+
   tags = local.dev-tags
 }
 
