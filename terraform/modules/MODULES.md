@@ -118,6 +118,8 @@ Provisions an EKS cluster with a managed node group, standard add-ons, and an OI
 - IAM role for nodes (`AmazonEKSWorkerNodePolicy`, `AmazonEKS_CNI_Policy`, `AmazonEC2ContainerRegistryReadOnly`)
 - Cluster add-ons: `coredns`, `kube-proxy`, `vpc-cni`, `aws-ebs-csi-driver`
 - IAM OIDC provider (for IRSA)
+- IRSA role for the EBS CSI driver (`AmazonEBSCSIDriverPolicy`)
+- IRSA role for External Secrets Operator (read access to `linkr/<env>/*` secrets in Secrets Manager)
 
 **Variables:**
 
@@ -131,6 +133,7 @@ Provisions an EKS cluster with a managed node group, standard add-ons, and an OI
 | `node_min_size`       | `number`       | `1`            | Minimum number of nodes                  |
 | `node_max_size`       | `number`       | `3`            | Maximum number of nodes                  |
 | `node_desired_size`   | `number`       | `2`            | Desired number of nodes                  |
+| `environment`         | `string`       | `"prod"`       | Deployment environment (`dev`, `prod`) — scopes ESO Secrets Manager access |
 | `tags`                | `map(string)`  | `{}`           | Tags applied to all resources            |
 
 **Outputs:**
@@ -142,3 +145,4 @@ Provisions an EKS cluster with a managed node group, standard add-ons, and an OI
 | `cluster_name`          | EKS cluster name                                 |
 | `oidc_issuer_url`       | OIDC issuer URL                                  |
 | `oidc_issuer_arn`       | ARN of the OIDC provider                         |
+| `node_security_group_id`| Security group ID attached to EKS nodes          |
