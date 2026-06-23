@@ -22,6 +22,10 @@ terraform/
 │       ├── outputs.tf
 │       └── version.tf
 └── modules/
+    ├── ecr/              # ECR repository module
+    │   ├── main.tf
+    │   ├── outputs.tf
+    │   └── variables.tf
     ├── eks/              # EKS cluster module
     │   ├── iam.tf
     │   ├── main.tf
@@ -71,6 +75,7 @@ See [terraform/modules/README.md](terraform/modules/MODULES.md) for full documen
 | [`eks`](terraform/modules/eks/)                 | EKS cluster with managed node group, standard add-ons, and OIDC provider for IRSA            |
 | [`rds`](terraform/modules/rds/)                 | PostgreSQL 16 RDS instance with encrypted storage and credentials stored in Secrets Manager   |
 | [`elasticache`](terraform/modules/elasticache/) | Redis 7.1 ElastiCache cluster with connection details stored in Secrets Manager               |
+| [`ecr`](terraform/modules/ecr/)                 | ECR repository with image scanning on push and lifecycle policy to cap stored image count     |
 
 ## Usage
 
