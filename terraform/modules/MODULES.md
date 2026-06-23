@@ -146,3 +146,29 @@ Provisions an EKS cluster with a managed node group, standard add-ons, and an OI
 | `oidc_issuer_url`       | OIDC issuer URL                                  |
 | `oidc_issuer_arn`       | ARN of the OIDC provider                         |
 | `node_security_group_id`| Security group ID attached to EKS nodes          |
+
+---
+
+## `ecr`
+
+Provisions an ECR repository with image scanning on push and a lifecycle policy to cap stored image count.
+
+**Resources created:**
+- ECR repository (scanning enabled on push, configurable tag mutability)
+- ECR lifecycle policy (expires images beyond the configured retention count)
+
+**Variables:**
+
+| Name                   | Type          | Default      | Description                                                          |
+| ---------------------- | ------------- | ------------ | -------------------------------------------------------------------- |
+| `name`                 | `string`      | —            | ECR repository name                                                  |
+| `image_tag_mutability` | `string`      | `"MUTABLE"`  | Tag mutability setting (`MUTABLE` or `IMMUTABLE`)                   |
+| `keep_image_count`     | `number`      | `10`         | Number of most-recent images to retain in the lifecycle policy       |
+| `tags`                 | `map(string)` | `{}`         | Tags applied to the repository                                       |
+
+**Outputs:**
+
+| Name               | Description                  |
+| ------------------ | ---------------------------- |
+| `repository_url`   | Full ECR repository URL      |
+| `repository_arn`   | ARN of the ECR repository    |
