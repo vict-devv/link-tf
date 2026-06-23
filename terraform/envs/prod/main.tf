@@ -61,3 +61,30 @@ module "elasticache" {
 
   tags = local.prod-tags
 }
+
+module "ecr_shortener_api" {
+  source = "../../modules/ecr"
+
+  name             = "shortener-api"
+  keep_image_count = 20
+
+  tags = local.prod-tags
+}
+
+module "ecr_analytics_worker" {
+  source = "../../modules/ecr"
+
+  name             = "analytics-worker"
+  keep_image_count = 20
+
+  tags = local.prod-tags
+}
+
+module "ecr_stats_api" {
+  source = "../../modules/ecr"
+
+  name             = "stats-api"
+  keep_image_count = 20
+
+  tags = local.prod-tags
+}
